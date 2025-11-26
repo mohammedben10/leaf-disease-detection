@@ -1,0 +1,54 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-chart-line"></i> Analysis History - {{ project.name }}</h1>
+    <a href="{% url 'project-detail' project.pk %}" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left"></i> Back to Project
+    </a>
+</div>
+
+{% if analyses %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Analysis Date</th>
+                        <th>Result</th>
+                        <th>Confidence</th>
+                        <th>Analyzed By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for analysis in analyses %}
+                    <tr>
+                        <td>{{ analysis.leaf_image.original_filename|truncatechars:30 }}</td>
+                        <td>{{ analysis.analyzed_at|date:"M d, Y H:i" }}</td>
+                        <td>
+                            <span class="badge {% if analysis.predicted_class == 'Healthy' %}bg-success{% else %}bg-warning{% endif %}">
+                                {{ analysis.predicted_class }}
+                            </span>
+                        </td>
+                        <td>{{ analysis.confidence|floatformat:2 }}</td>
+                        <td>{{ analysis.analyzed_by.username }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+    <h3>No Analysis Yet</h3>
+    <p class="text-muted">Analyze some leaf images to see the history here.</p>
+    <a href="{% url 'project-detail' project.pk %}" class="btn btn-success">
+        <i class="fas fa-bolt"></i> Analyze Images
+    </a>
+</div>
+{% endif %}
+{% endblock %}
